@@ -17,9 +17,20 @@ app.get('/', (req, res) => {
 
 // Handle WebSocket connections
 io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
 
-  //write your code here
+  // Listen for 'message' events from the client
+  socket.on('message', (msg) => {
+    console.log(`Message received from ${socket.id}: ${msg}`);
+    
+    // Broadcast the message to all clients except the sender
+    socket.broadcast.emit('message', msg);
+  });
 
+  // Handle disconnection
+  socket.on('disconnect', () => {
+    console.log('A user disconnected:', socket.id);
+  });
 });
 
 // Start the server
@@ -28,4 +39,4 @@ server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-module.exports = {app}
+module.exports = { app };
